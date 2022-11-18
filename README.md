@@ -53,6 +53,8 @@ To build the library run `make`. This essentially just does a `mvn install` and 
 
 ## Use the jar in an external transform
 
+Ensure you have dependencies installed using whatever dependency manager you use. When in doubt: `pip install apache-beam[gcp]`
+
 See [python/bigtableexport.py](python/bigtableexport.py) for example of using java transform. You can use this transform to test your bigtable to gcs export or as a starting point. The pipeline can be invoked like so:
 
 ```sh
@@ -73,7 +75,8 @@ You can view your results via gsutil:
 gsutil cat ${OUTPUT}* | head
 ```
 
-Expected results: 1 line of JSON per Result. Which is an array of Cells
+Expected results: 1 line of JSON per Result. Which is an array of Cells. Note that your results won't match those below because you are dumping from your table. You will need
+to have an actual bigtable instance with data in order to test.
 ```
 [{"family": "column", "qualifier": "greeting", "timestamp": 1668719170.905, "value": "Hello World!"}, {"family": "column", "qualifier": "greeting", "timestamp": 1668719033.208, "value": "Hello World!"}]
 [{"family": "column", "qualifier": "greeting", "timestamp": 1668719171.015, "value": "Hello Cloud Bigtable!"}, {"family": "column", "qualifier": "greeting", "timestamp": 1668719033.209, "value": "Hello Cloud Bigtable!"}]
@@ -83,7 +86,7 @@ Expected results: 1 line of JSON per Result. Which is an array of Cells
 
 ## Write your own pipelines using this transform
 
-The `bigtableexport.py` file shows that is needed to utilize a java external transform. It's only 3 small things:
+The [python/bigtableexport.py](python/bigtableexport.py) file shows that is needed to utilize a java external transform. It's only 3 small things:
 
 - Add the import of JavaExternalTransform
 - Define a classpath argument to your pipeline
