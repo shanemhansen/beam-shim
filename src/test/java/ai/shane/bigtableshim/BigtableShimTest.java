@@ -58,18 +58,4 @@ public class BigtableShimTest {
             assertTrue("rows have correct value", new String(r.getBytes("value")).matches("^value\\d+$"));
         }
     }
-    @Benchmark
-    @OutputTimeUnit(TimeUnit.MILLISECONDS)
-    public void benchRowConvert() {
-        Cell[] cells = new Cell[]{
-            CellUtil.createCell(HConstants.EMPTY_BYTE_ARRAY, "family".getBytes(), "qualifier1".getBytes(), HConstants.LATEST_TIMESTAMP, KeyValue.Type.Maximum.getCode(), "value1".getBytes()),
-            CellUtil.createCell(HConstants.EMPTY_BYTE_ARRAY, "family".getBytes(), "qualifier2".getBytes(), HConstants.LATEST_TIMESTAMP, KeyValue.Type.Maximum.getCode(), "value2".getBytes()),
-        };
-        RowConverter converter = new RowConverter(BigtableShim.getResultSchema(), BigtableShim.getCellSchema());
-        Result result = Result.create(cells);
-        for(int i=0;i<1000;i++) {
-            converter.convertElement(result);            
-        }
-    }
-
 }
