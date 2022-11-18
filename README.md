@@ -110,3 +110,11 @@ with beam.Pipeline(options=pipeline_options) as pipe:
                     known_args.bigtableTableId)
 
 ```
+
+## Limitations
+
+The java transform utilizes [CloudBigtableIO](https://cloud.google.com/bigtable/docs/dataflow-hbase-api/javadoc/com/google/cloud/bigtable/beam/CloudBigtableIO) which supports many options not specified here such as `Scan` config, filters, and key ranges.
+
+## Troubleshooting
+
+If you get errors about the jvm not starting. It's possible you are using an older version of Beam which generates invalid jars for long classpaths.

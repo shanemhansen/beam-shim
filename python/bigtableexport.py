@@ -81,8 +81,14 @@ def run(argv=None):
                     known_args.bigtableInstanceId,
                     known_args.bigtableTableId)
         # pylint: disable=expression-not-assigned
-        lines | beam.Map(lambda val: json.dumps([{"family":r.family.decode("utf-8"), "qualifier": r.qualifier.decode("utf-8"), "timestamp":r.timestamp.micros*1.0/1000/1000, "value":r.value.decode("utf-8")} for r in val.result])) | 'Write' >> WriteToText(
-            known_args.output)
+        lines | beam.Map(lambda val: json.dumps([
+            {
+                "family":r.family.decode("utf-8"),
+                "qualifier": r.qualifier.decode("utf-8"),
+                "timestamp":r.timestamp.micros*1.0/1000/1000,
+                "value":r.value.decode("utf-8")
+                } for r in val.result])
+                ) | 'Write' >> WriteToText(known_args.output)
 
 
 def patch_subprocess_server():
@@ -132,5 +138,7 @@ def patch_subprocess_server():
 
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
-    patch_subprocess_server()
+    # patch_subprocess_server is only needed for older versions of beam uncomment the below line to apply
+    # a fix to make large classpaths work on older versions.
+    # patch_subprocess_server()
     run()
