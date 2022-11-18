@@ -15,20 +15,9 @@
 # limitations under the License.
 #
 
-"""A word-counting workflow."""
+"""A bigtable to gcs export demo using java external transform"""
 
-# pytype: skip-file
 
-# beam-playground:
-#   name: WordCount
-#   description: An example that counts words in Shakespeare's works.
-#   multifile: false
-#   pipeline_options: --output output.txt
-#   context_line: 44
-#   categories:
-#     - Combiners
-#     - Options
-#     - Quickstart
 import os
 import argparse
 import logging
@@ -45,7 +34,7 @@ from apache_beam.utils.subprocess_server import JavaJarServer
 
 
 def run(argv=None):
-    """Main entry point; defines and runs the wordcount pipeline."""
+    """Main entry point; defines and runs the export pipeline."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--classpath',
@@ -82,6 +71,7 @@ def run(argv=None):
     # The pipeline will be run on exiting the with block.
     import json
     with beam.Pipeline(options=pipeline_options) as pipe:
+        # pylint: disable=unsupported-binary-operation
         classpath = known_args.classpath.split(":")
         lines = pipe | 'Read' \
             >> JavaExternalTransform(
