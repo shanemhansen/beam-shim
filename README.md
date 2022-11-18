@@ -64,7 +64,7 @@ python python/bigtableexport.py \
     --bigtableProjectId $PROJECT \
     --bigtableInstanceId $BIGTABLE_INSTANCE \
     --bigtableTableId $BIGTABLE_TABLE \
-    --output $OUTPUT --classpath="$(cat classpath)" --runner=direct;
+    --output $OUTPUT --classpath="$(cat classpath)" --runner=direct
 ```
 
 You can view your results via gsutil:
