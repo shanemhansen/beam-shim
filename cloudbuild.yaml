@@ -1,0 +1,17 @@
+timeout: 3600s
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker pull gcr.io/$PROJECT_ID/beam-shim:latest || exit 0']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build','-t', 'gcr.io/$PROJECT_ID/beam-shim:$BUILD_ID', '-t', 'gcr.io/$PROJECT_ID/beam-shim:latest', '.', '--cache-from', 'gcr.io/$PROJECT_ID/beam-shim:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['run', '--rm', '--volume=/workspace:/workspace','gcr.io/$PROJECT_ID/beam-shim:$BUILD_ID', '/bin/bash', '-c',
+    'cp /classpath/*jar /workspace; cp /app/target/*jar /workspace/; cd /workspace; tar czf /workspace/artifact.tar.gz *jar']
+artifacts:
+  objects:
+    location: 'gs://${_CLASSPATH_DIR_}/$BUILD_ID/'
+    paths: ['/workspace/artifact.tar.gz']
+images:
+  - gcr.io/$PROJECT_ID/beam-shim:latest
+  - gcr.io/$PROJECT_ID/beam-shim:$BUILD_ID
