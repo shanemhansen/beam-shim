@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.beam.sdk.io.BoundedSource;
 import org.apache.beam.sdk.values.Row;
@@ -17,17 +19,19 @@ import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 
 public class BigtableShimTest {
+    final ConfigMap emptyConfig = new ConfigMap(new HashMap<String, String>());
+
     @Test
     public void testShimConstructor() {
         // At least make sure we can construct the object. Ideally we want to ensure that certain methods
         // are compatible with cross language schema stuff
-        BoundedSource<Result> result = BigtableShim.read("project-id", "instance-id", "table-id");
+        BoundedSource<Result> result = BigtableShim.read("project-id", "instance-id", "table-id", emptyConfig);
         assertNotNull(result);
     }
     @Test
     public void testShimCoder() {
         // Ensure codec is python compatible if possible
-        BigtableShim shim = BigtableShim.From("project-id", "instance-id", "table-id");
+        BigtableShim shim = BigtableShim.From("project-id", "instance-id", "table-id", emptyConfig);
         assertNotNull(shim);
     }
     @Test

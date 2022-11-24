@@ -1,9 +1,12 @@
 package ai.shane.bigtableshim;
 
 import java.util.List;
+import java.util.Map;
 
+import com.google.cloud.bigtable.beam.CloudBigtableConfiguration;
 import com.google.cloud.bigtable.beam.CloudBigtableIO;
 import com.google.cloud.bigtable.beam.CloudBigtableScanConfiguration;
+import com.google.cloud.bigtable.hbase.BigtableOptionsFactory;
 
 import org.apache.beam.sdk.io.BoundedSource;
 import org.apache.beam.sdk.io.Read;
@@ -27,17 +30,20 @@ public class BigtableShim extends PTransform<PBegin, PCollection<Row>> {
         this.resultSchema = resultSchema;
         this.cellSchema = cellSchema;
     }
-    public static BoundedSource<Result> read(String projectId, String instanceId, String tableId) {
-        CloudBigtableScanConfiguration btConfig = new CloudBigtableScanConfiguration.Builder()
+    public static BoundedSource<Result> read(String projectId, String instanceId, String tableId, ConfigMap configuration) {
+        CloudBigtableScanConfiguration.Builder btConfig = new CloudBigtableScanConfiguration.Builder()
         .withProjectId(projectId)
         .withTableId(tableId)
-        .withInstanceId(instanceId).build();
-        return CloudBigtableIO.read(btConfig);
+        .withInstanceId(instanceId);
+        for(Map.Entry<String, String> entry: configuration.entrySet()) {
+            btConfig.withConfiguration(entry.getKey(), entry.getValue());
+        }
+        return CloudBigtableIO.read(btConfig.build());
     }
-    public static BigtableShim From(String projectId, String instanceId, String tableId) {
+    public static BigtableShim From(String projectId, String instanceId, String tableId, ConfigMap configuration) {
         
         BigtableShim shim = new BigtableShim(getResultSchema(), getCellSchema());
-        shim.wrapped = Read.from(read(projectId, instanceId, tableId));
+        shim.wrapped = Read.from(read(projectId, instanceId, tableId, configuration));
         return shim;
     }
     @Override

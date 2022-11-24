@@ -2,7 +2,6 @@ package ai.shane.bigtableshim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.apache.beam.sdk.schemas.Schema;
 import org.apache.beam.sdk.transforms.DoFn;
