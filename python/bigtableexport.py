@@ -21,10 +21,10 @@
 import os
 import argparse
 import logging
-
 import glob
 import hashlib
 import zipfile
+from typing import NamedTuple, Dict
 
 import apache_beam as beam
 from apache_beam.io import WriteToText
@@ -32,8 +32,10 @@ from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.transforms.external import JavaExternalTransform
 from apache_beam.utils.subprocess_server import JavaJarServer
 
+class ConfigMap(NamedTuple):
+    values: Dict[str, str]
 
-def run(argv=None):
+def run(argv=None) -> None:
     """Main entry point; defines and runs the export pipeline."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -79,7 +81,7 @@ def run(argv=None):
                 classpath=classpath).From(
                     known_args.bigtableProjectId,
                     known_args.bigtableInstanceId,
-                    known_args.bigtableTableId)
+                    known_args.bigtableTableId, ConfigMap(values={}))
         # pylint: disable=expression-not-assigned
         lines | beam.Map(lambda val: json.dumps([
             {
@@ -91,7 +93,7 @@ def run(argv=None):
                 ) | 'Write' >> WriteToText(known_args.output)
 
 
-def patch_subprocess_server():
+def patch_subprocess_server() -> None:
     """
     patch_subprocess_server fixes a bug where line wrapping is not applied
     to a large list of jar files, resulting in an invalid jar.
